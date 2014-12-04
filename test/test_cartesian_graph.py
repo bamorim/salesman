@@ -1,6 +1,7 @@
 import unittest
 from graph.cartesian_graph import CartesianGraph
 
+
 class TestCartesianGraph(unittest.TestCase):
     def test_some_edges(self):
         graph = CartesianGraph()
