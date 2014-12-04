@@ -20,5 +20,5 @@ class CartesianGraph:
     def pathEdges(self,path):
         return map(lambda f,t: self.getEdge(f,t), path[:-1], path[1:])
         
-    def size():
-        return len(vertices.size)
+    def __len__(self):
+        return len(self.vertices)

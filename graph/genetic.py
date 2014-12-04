@@ -6,7 +6,7 @@ class Path:
     def __init__(self,G,vertices):
         self.graph = G
         self.vertices = vertices
-        self.cost = reduce(lambda acc,edge: acc + edge[2], G.pathEdges(vertices), 0)
+        self.cost = reduce(lambda acc,edge: acc + edge[2], G.pathEdges(vertices+ [vertices[0]] ), 0)
     
     def mutate(self):
         p = [i for i in self.vertices]
@@ -19,52 +19,74 @@ class Path:
     
     def crossOver(self,other):
         size = len(self.vertices)
-        remaining = set(range(size))
         intersect = random.randrange(0, size)
+        remaining = set(range(size))
         
-        child = [i for i in self.vertices[:intersect]]
-        for i in self.vertices[:intersect]:
-            remaining.remove(i)
-            child.append(i)
+        # Keeps the position of duplicate items
+        duplicate = list()
+        child = list()
             
-        for each in remaining:
-            child.append(i)
+        for v in self.vertices[:intersect] + other.vertices[intersect:]:
+            if v in remaining:
+                duplicate.append(len(child))
+            else:
+                remaining.discard(v)
+            child.append(v)
+            
+        for v in list(remaining):
+            child[duplicate.pop()] = v
+            
+        return Path(self.graph,child)
 
 class Population:
     def __init__(self, G, paths):
         self.graph = G
-        self.paths = self.sort(paths)
+        self.paths = paths
     
-    def sort(self,paths):
-        sorted(paths, key=lambda x: x.cost)
+    def bestVertices(self):
+        return sorted(self.paths, key=lambda x: x.cost)[0].vertices
         
-    def survivors(self):
-        size = len(self.paths)
+    # Natural Selection for a list of individuals
+    def select(self,unsorted_individuals):
+        individuals = sorted(unsorted_individuals, key=lambda x: x.cost)
+        size = len(individuals)
         
-        best = self.paths[:ceil(size*0.4)]
-        mediocre = self.paths[ceil(size*0.65):ceil(size*0.85)]
-        worst = self.paths[ceil(size*0.9):]
+        ten_p = int(ceil(len(self.paths)/10))
+        mediocre_bottom = int(ceil(size*0.6))
+        # We should fix some numbers instead of using percentage.
+        best = individuals[:ten_p*5]
+        mediocre = individuals[mediocre_bottom:mediocre_bottom+ten_p*3]
+        worst = individuals[ten_p*(-2):]
         
         return best + mediocre + worst
     
+    # Mutate, CrossOver and Select next generation.
     def nextGeneration(self):
-        survivors = self.survivors()
+        mutations = map(lambda x: x.mutate(), self.paths)
+        children = map(
+            lambda x,y: [x.crossOver(y), y.crossOver(x)],
+            self.paths[:-1], 
+            self.paths[1:])
         
-        mutations = map(lambda x: x.mutate(), survivors)
-        return Population(G, survivors + mutations)
+        children = [ i for it in children for i in it ]
+        
+        everyone = self.paths + mutations + children
+        return Population(self.graph, self.select(everyone))
 
 
 def generatePopulation(G, size):
     paths = []
-    n = G.size()
+    n = len(G)
     indexes = range(n)
     for each in range(size):
-        paths.append(Path(G,random.sort(indexes)))
+        x = indexes[:]
+        random.shuffle(x)
+        paths.append(Path(G,x))
     return Population(G,paths)
 
 
 def run(G, iters, popsize):
     pop = generatePopulation(G, popsize)
     for i in range(iters):
-        pop = nextGeneration(G, pop)
-    return sortPopulation(G, pop)[0]
+        pop = pop.nextGeneration()
+    return pop
