@@ -84,6 +84,19 @@ def generatePopulation(G, size):
         paths.append(Path(G,x))
     return Population(G,paths)
 
+def generatePopulationNearestNeighbors(G, size, randomFactor=0.5):
+    r = generatePopulation(G,int(size*randomFactor)).paths
+    nearestPathsSize = size-len(r)
+    init = random.randrange(0,len(G))
+    nearestNeighbors = [
+        map(
+            lambda (x,y,w): y,
+            sorted(G.getEdges(i), key= lambda e: e[2])[:10]
+        ) for i in range(0,len(G))
+    ]
+    neighborPaths = [ reduce(lambda l, v: l + [nearestNeighbors[l[v-1]][random.randrange(0,10)]], range(1,len(G)), [init]) for i in range(0,nearestPathsSize) ]
+    neighborPaths = map(lambda x: Path(G,x), neighborPaths)
+    return Population(G,neighborPaths + r)
 
 def run(G, iters, popsize):
     pop = generatePopulation(G, popsize)

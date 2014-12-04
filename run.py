@@ -30,19 +30,20 @@ def print_result(pop, its):
 import graph.plot as gplot
 from graph.factory import makeGraph
 from graph.genetic import generatePopulation
+from graph.genetic import generatePopulationNearestNeighbors
 
 source = sys.argv[1]
 import re
 fname = re.sub(r'\.[^\.]+$', "", source)
 
 g = makeGraph(source)
-pop = generatePopulation(g,100)
+pop = generatePopulationNearestNeighbors(g,100)
 
 plot(g,pop,fname+"_0")
 print_result(pop,0)
 
 its = 0
-for iters in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+for iters in [1, 2, 5, 10, 20, 50, 100]:#, 200, 500, 1000]:
     newIters = iters - its
     its = iters
     for i in range(newIters):
