@@ -88,71 +88,11 @@ def generatePopulation(G, size=100, randomFactor=0.5):
     )
 
 # Completely Random
+from graph import generators
 def generateRandomPaths(G, popSize):
-    return [ generateRandomPath(G) for i in range(popSize) ]
-
-def generateRandomPath(G):
-    indexes = range(len(G))
-    random.shuffle(indexes)
-    return Path(G,indexes)
-
-def generateNearestNeighbors(G):
-    return [
-        map(
-            lambda (x,y,w): y,
-            sorted(G.getEdges(i), key= lambda e: e[2])
-        ) for i in range(0,len(G))
-    ]
+    return [ Path(G,generators.generateRandomPath(G)) for i in range(popSize) ]
 
 def generateNeighborsPaths(G, size):
-    neighbors = generateNearestNeighbors(G)
-    return [ generateNeighborsPath(G,neighbors) for i in range(size) ]
+    neighbors = generators.generateNearestNeighbors(G)
+    return [ Path(G,generators.generateNeighborsPath(G,neighbors)) for i in range(size) ]
 
-def generateNeighborsPath(G, nearestNeighbors=None):
-    if nearestNeighbors==None:
-        nearestNeighbors = generateNearestNeighbors(G)
-    init = random.randrange(0,len(G))
-    nearestMax = 3
-    path = [ init ]
-    included = [ True if i == init else False for i in range(len(G)) ]
-
-    for i in range(1,len(G)):
-        nextVertex = filter( lambda v: not included[v], nearestNeighbors[path[i-1]] )[
-            random.randrange(0, nearestMax if len(G) - i > nearestMax else len(G) - i)
-        ]
-        path.append(nextVertex)
-        included[nextVertex] = True
-
-    return Path(G,path)
-
-def improveCost(G,vs,i):
-    return G.getEdge(vs[i],vs[i+1])[2] - G.getEdge(vs[-1], vs[i])[2]
-
-def improvedPath(G,vs,i):
-    return Path(G,vs[:i+1]+vs[-2:-1]+vs[i+1:][::-1])
-
-def improvePath(G,path,alpha=100,depth=0,r=set()):
-    vs = path.vertices
-    if depth < alpha:
-        for i, x in enumerate(vs[1:-2]):
-            if x in r:
-                continue
-            c = improveCost(G,vs,i)
-            if c > 0:
-                print "c>0"
-                newPath = improvedPath(G,vs,i)
-                if newPath.cost < path.cost:
-                    return newPath
-                else:
-                    return improvePath(G, newPath, alpha, depth+1, r.union([x]))
-        else:
-            weigths = map(lambda i: (i, improveCost(G,vs,i)), range(1,len(vs)-1))
-            best = sorted(weigths, key=lambda (i, c): c)[-1]
-            if best[1] > 0:
-                newPath = improvedPath(G,vs,best[0])
-                if newPath.cost < path.cost:
-                    return newPath
-                else:
-                    return improvePath(G, newPath, alpha, depth+1, r.union([x]))
-    if depth == 0:
-        return path

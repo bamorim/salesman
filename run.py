@@ -2,7 +2,7 @@
 
 import sys, math
 
-def plot(g, population, fname):
+def plot(g, path, fname):
     import matplotlib
     matplotlib.use('Agg')
     from matplotlib import pyplot as plt
@@ -14,9 +14,12 @@ def plot(g, population, fname):
     [i.set_linewidth(0.1) for i in plt.gca().spines.itervalues()]
     
     gplot.plotVertices(plt, g)
-    gplot.plotPath(plt,g,population.bestVertices())
+    gplot.plotPath(plt,g,path)
     
     fig.savefig(fname+".png", bbox_inches='tight')
+
+def plot_genetic(g, population, fname):
+    plot(g, population.bestVertices(), fname)
 
 def print_result(path, cost, msg):
     cientcost = "%e" % cost
@@ -40,19 +43,57 @@ def run():
     sys.stderr.write("[INFO] Loading graph...\n")
     g = makeGraph(source)
 
-    run_genetic(g,fname)
+    runners = {
+        "genetic": run_genetic,
+        "2opt": run_nn_two_opt,
+        "amorim": run_amorim,
+        "amorim2opt": run_amorim_two_opt
+    }
+    runner = "genetic"
+    if len(sys.argv) >= 3:
+        runner = sys.argv[2]
 
-from graph.genetic import generateNeighborsPath
-def run_two_op(g,fname):
+    runners[runner](g,fname)
+
+from graph.amorim import amorim
+def run_amorim(g,fname):
+    sys.stderr.write("[INFO] Running Amorim's Algorithm\n")
+    path = amorim(g)
+    print_result(path, g.pathCost(path), "Amorim Algo's")
+    plot(g, path, fname+"_amorim")
+    return path
+
+def run_amorim_two_opt(g,fname):
+    path = run_amorim(g,fname)
+    run_two_opt(g,fname+"_amorim",path)
+
+from graph.generators import generateNeighborsPath
+from graph import two_opt
+def run_two_opt(g,fname,path):
+    curr_iter = 0
+
+    while two_opt.improvePath(g, path):
+        curr_iter = curr_iter + 1
+        if math.log10(curr_iter) % 1 == 0:
+            print_result(path, g.pathCost(path), "Iter #"+str(curr_iter))
+            plot(g, path, fname+"_2opt_"+str(curr_iter))
+    print_result(path, g.pathCost(path), "Final 2opt")
+    plot(g,path,fname+"_2opt")
+
+def run_nn_two_opt(g,fname):
     sys.stderr.write("[INFO] Generating nearestNeighbors\n")
-    firstPath = generateNeighborsPath(G)
+    path = generateNeighborsPath(g,None,1)
 
+    print_result(path, g.pathCost(path), "Nearest Neighbors Path")
+    plot(g, path, fname+"_nn")
+
+    run_two_opt(g,fname,path)
 
 def run_genetic(g,fname):
     sys.stderr.write("[INFO] Generating generation #0\n")
     pop = generatePopulation(g,100)
 
-    plot(g,pop,fname+"_0")
+    plot_genetic(g,pop,fname+"_0")
     print_genetic_result(pop,0)
 
     its = 0
@@ -63,6 +104,6 @@ def run_genetic(g,fname):
             pop = pop.nextGeneration()
         
         print_genetic_result(pop, its)
-        plot(g,pop,fname+"_"+str(its))
+        plot_genetic(g,pop,fname+"_"+str(its))
 
 run()
