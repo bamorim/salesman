@@ -27,6 +27,9 @@ class CartesianGraph:
     # Complexity: O(len(path))
     def pathEdges(self,path):
         return map(lambda f,t: self.getEdge(f,t), path[:-1], path[1:])
+
+    def pathCost(self,path):
+        return reduce(lambda acc,edge: acc + edge[2], self.pathEdges(path+ [path[0]] ), 0)
         
     # Complexity O(1)
     def __len__(self):
