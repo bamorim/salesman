@@ -11,7 +11,7 @@ class Path:
     def mutate(self):
         p = [i for i in self.vertices]
         n = random.randrange(1,ceil(len(p)**0.3))
-        for i in range(n):
+        for i in xrange(n):
             a = random.randrange(0,len(p))
             b = random.randrange(0,len(p))
             p[a], p[b] = p[b], p[a]
@@ -90,9 +90,9 @@ def generatePopulation(G, size=100, randomFactor=0.5):
 # Completely Random
 from graph import generators
 def generateRandomPaths(G, popSize):
-    return [ Path(G,generators.generateRandomPath(G)) for i in range(popSize) ]
+    return [ Path(G,generators.generateRandomPath(G)) for i in xrange(popSize) ]
 
 def generateNeighborsPaths(G, size):
     neighbors = generators.generateNearestNeighbors(G)
-    return [ Path(G,generators.generateNeighborsPath(G,neighbors)) for i in range(size) ]
+    return [ Path(G,generators.generateNeighborsPath(G,neighbors)) for i in xrange(size) ]
 

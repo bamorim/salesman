@@ -2,8 +2,8 @@ def improvePath(G,initial_path):
     path = initial_path
     cost = G.pathCost(path)
     edgeCost = lambda a,b: G.getEdge(a,b)[2]
-    for i in range(0,len(G)):
-        for j in range(i+2,len(G)):
+    for i in xrange(0,len(G)):
+        for j in xrange(i+2,len(G)):
             if crosses(G,path[i],path[i-1],path[j],path[j-1]):
                 swap2op(path,i,j)
                 return True

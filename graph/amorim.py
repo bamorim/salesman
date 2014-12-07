@@ -53,12 +53,12 @@ class Path:
         return vertices
 
 def amorim(G):
-    allowed = [True for i in range(len(G))]
-    edges = [G.getEdge(i,j) for i in range(len(G)) for j in range(len(G)) if i != j]
+    allowed = [True for i in xrange(len(G))]
+    edges = [G.getEdge(i,j) for i in xrange(len(G)) for j in xrange(len(G)) if i != j]
     edges.sort(key= lambda e: e[2])
 
     # Start all paths with a single vertice
-    paths = [PathNode(i) for i in range(len(G))]
+    paths = [PathNode(i) for i in xrange(len(G))]
     newPath = None
 
     # O(|V|^2)
