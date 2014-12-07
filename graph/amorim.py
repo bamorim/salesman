@@ -61,11 +61,13 @@ def amorim(G):
     paths = [PathNode(i) for i in range(len(G))]
     newPath = None
 
+    # O(|V|^2)
     while len(edges) > 0:
         i,j,w = edges.pop(0) # Get the lightest edge
 
         # Check if any of the vertex are already in a middle of a path
         if allowed[i] and allowed[j]:
+            # All O(1)
             ip = paths[i]
             jp = paths[j]
             ifirst = ip.leftEdge == i
@@ -84,17 +86,23 @@ def amorim(G):
 
             # Join both paths
             if not ifirst and jfirst:
+                # O(1)
                 newPath = Path(ip,jp)
             elif ifirst and jfirst:
+                # O(1)
                 newPath = Path(ip.reverse(),jp)
             elif ifirst and not jfirst:
+                # O(1)
                 newPath = Path(jp,ip)
             else:
+                # O(1)
                 newPath = Path(ip,jp.reverse())
 
+            # O(1)
             paths[i] = newPath
             paths[j] = newPath
             paths[oi] = newPath
             paths[oj] = newPath
 
+    # O(|V|^2) given that max depth is |E|
     return list(newPath.traverse())
