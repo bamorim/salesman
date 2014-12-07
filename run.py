@@ -72,11 +72,15 @@ from graph import two_opt
 def run_two_opt(g,fname,path):
     curr_iter = 0
 
-    while two_opt.improvePath(g, path):
+    path = path
+    for nppath in two_opt.improvePath(g, path):
+        path = nppath
         curr_iter = curr_iter + 1
         if math.log10(curr_iter) % 1 == 0:
+            path = list(path)
             print_result(path, g.pathCost(path), "Iter #"+str(curr_iter))
             plot(g, path, fname+"_2opt_"+str(curr_iter))
+    path = list(path)
     print_result(path, g.pathCost(path), "Final 2opt")
     plot(g,path,fname+"_2opt")
 
