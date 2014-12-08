@@ -8,7 +8,7 @@ class CartesianGraph:
     def add(self,x,y):
         self.vertices.append((x,y))
         return len(self.vertices)-1
-        
+     
     # Complexity: O(1)
     def __getitem__(self, key):
         return self.vertices[key]

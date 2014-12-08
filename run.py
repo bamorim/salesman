@@ -47,7 +47,9 @@ def run():
         "genetic": run_genetic,
         "2opt": run_nn_two_opt,
         "amorim": run_amorim,
-        "amorim2opt": run_amorim_two_opt
+        "amorim2opt": run_amorim_two_opt,
+        "mstdfs": run_mst_dfs,
+        "mstdfs2opt": run_mst_dfs_2opt
     }
     runner = "genetic"
     if len(sys.argv) >= 3:
@@ -66,6 +68,16 @@ def run_amorim(g,fname):
 def run_amorim_two_opt(g,fname):
     path = run_amorim(g,fname)
     run_two_opt(g,fname+"_amorim",path)
+
+from graph.mst_dfs import MST, DFS
+def run_mst_dfs(g,fname):
+    path = DFS(MST(g))
+    plot(g, path, fname+"_mst_dfs")
+    return path
+
+def run_mst_dfs_2opt(g, fname):
+    path = run_mst_dfs(g,fname)
+    run_two_opt(g,fname+"_mst_dfs",path)
 
 from graph.generators import generateNeighborsPath
 from graph import two_opt

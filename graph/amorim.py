@@ -1,6 +1,7 @@
 from collections import deque
 import numpy as np
-def traverse(paths,initial):
+
+def traverse(paths, initial):
     # Stack keeps values as (path, reversed)
     print "Traversing"
     stack = deque()

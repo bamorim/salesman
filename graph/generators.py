@@ -13,7 +13,7 @@ def generateNearestNeighbors(G):
         ) for i in range(0,len(G))
     ]
 
-def generateNeighborsPath(G, nearestNeighbors=None,nearestMax=3):
+def generateNeighborsPath(G, nearestNeighbors=None, nearestMax=3):
     if nearestNeighbors==None:
         nearestNeighbors = generateNearestNeighbors(G)
     init = random.randrange(0,len(G))
