@@ -1,5 +1,7 @@
 import threading, queue, random
 
+#NOT WORKING YET !!!
+
 def pointerJump(parents):
 	sucessor = [None for each in parents]
 	sucessor_next = [None for each in parents]

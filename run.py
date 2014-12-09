@@ -71,7 +71,9 @@ def run_amorim_two_opt(g,fname):
 
 from graph.mst_dfs import MST, DFS
 def run_mst_dfs(g,fname):
+    sys.stderr.write("[INFO] Running MST + DFS\n")
     path = DFS(MST(g))
+    print_result(path, g.pathCost(path), "MST+DFS")
     plot(g, path, fname+"_mst_dfs")
     return path
 

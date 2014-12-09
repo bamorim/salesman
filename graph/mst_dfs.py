@@ -80,7 +80,6 @@ def DFS(Tree):
 	vertex = random.randrange(n)
 
 	S.append(vertex)
-	print("This is v:", vertex)
 	#While S isnt empty
 	while S:
 		v = S.pop()
@@ -90,29 +89,3 @@ def DFS(Tree):
 			for u in Tree[v]:
 				S.append(u)
 	return path
-
-
-def plot(g, path, fname):
-    import matplotlib
-    matplotlib.use('Agg')
-    from matplotlib import pyplot as plt
-    plt.close('all')
-    
-    mult = 2**math.floor( math.log10( len(g.vertices) ) )
-    fig = plt.figure(1, figsize=(2*mult, 2*mult))
-    
-    [i.set_linewidth(0.1) for i in plt.gca().spines.values()]
-    
-    gplot.plotVertices(plt, g)
-    gplot.plotPath(plt,g,path)
-    
-    fig.savefig(fname+".png", bbox_inches='tight')
-
-
-
-#Running
-print("Running...")
-G = makeGraph('../../points-10000.txt')
-paf = DFS(MST(G))
-plot(G,paf,'/home/volpi/test')
-
